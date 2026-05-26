@@ -1,0 +1,139 @@
+// ============================================================
+//  NutriTrack — Modelo Entidad-Relación (DBML)
+//  Visualizable en: https://dbdiagram.io
+// ============================================================
+
+Table usuarios {
+  id               int           [pk, increment]
+  nombre           varchar(100)  [not null]
+  email            varchar(150)  [not null, unique]
+  password_hash    varchar(255)  [not null]
+  fecha_nacimiento date
+  sexo             enum('masculino','femenino','otro')
+  altura_cm        float
+  creado_en        timestamp     [default: `CURRENT_TIMESTAMP`]
+}
+
+Table perfil_fisico {
+  id              int   [pk, increment]
+  usuario_id      int   [not null, unique, ref: - usuarios.id]  // uno a uno
+  peso_kg         float
+  meta_calorias   float [not null, default: 2000]
+  meta_proteina_g float [not null, default: 50]
+  meta_carbs_g    float [not null, default: 250]
+  meta_grasas_g   float [not null, default: 70]
+  actualizado_en  timestamp
+}
+
+Table alimentos {
+  id                int           [pk, increment]
+  nombre            varchar(150)  [not null]
+  marca             varchar(100)
+  categoria         enum('verduras','frutas','cereales','proteinas','lacteos','grasas','bebidas','otro')
+  calorias_por_100g float         [not null, default: 0]
+  proteina_g        float         [not null, default: 0]
+  carbs_g           float         [not null, default: 0]
+  grasas_g          float         [not null, default: 0]
+  fibra_g           float         [not null, default: 0]
+  es_personalizado  boolean       [not null, default: false]
+  creado_por        int           [ref: > usuarios.id]  // muchos a uno, nullable
+}
+
+Table registros_comida {
+  id               int   [pk, increment]
+  usuario_id       int   [not null, ref: > usuarios.id]
+  alimento_id      int   [not null, ref: > alimentos.id]
+  tiempo_comida    enum('desayuno','almuerzo','cena','colacion') [not null]
+  cantidad_g       float [not null]
+  calorias_totales float [not null]
+  proteina_total   float [not null, default: 0]
+  carbs_total      float [not null, default: 0]
+  grasas_total     float [not null, default: 0]
+  fecha            date  [not null]
+  hora             time
+}
+
+Table recetas {
+  id             int          [pk, increment]
+  nombre         varchar(150) [not null]
+  descripcion    text
+  tiempo_min     int
+  calorias_total float        [not null, default: 0]
+  creado_por     int          [ref: > usuarios.id]  // nullable
+}
+
+Table receta_ingredientes {
+  id          int   [pk, increment]
+  receta_id   int   [not null, ref: > recetas.id]
+  alimento_id int   [not null, ref: > alimentos.id]
+  cantidad_g  float [not null]
+
+  indexes {
+    (receta_id, alimento_id) [unique]
+  }
+}
+
+Table historial_peso {
+  id         int   [pk, increment]
+  usuario_id int   [not null, ref: > usuarios.id]
+  peso_kg    float [not null]
+  fecha      date  [not null]
+  nota       text
+}
+
+Table registro_agua {
+  id          int   [pk, increment]
+  usuario_id  int   [not null, ref: > usuarios.id]
+  cantidad_ml float [not null]
+  fecha       date  [not null]
+  hora        time
+}
+
+Table logros {
+  id          int          [pk, increment]
+  nombre      varchar(100) [not null]
+  descripcion text
+  icono       varchar(10)
+  tipo        enum('racha','calorias','peso','agua','recetas','registros') [not null]
+  valor_meta  int          [not null, default: 1]
+}
+
+Table usuario_logros {
+  id              int       [pk, increment]
+  usuario_id      int       [not null, ref: > usuarios.id]
+  logro_id        int       [not null, ref: > logros.id]
+  desbloqueado_en timestamp [default: `CURRENT_TIMESTAMP`]
+
+  indexes {
+    (usuario_id, logro_id) [unique]
+  }
+}
+
+Table notificaciones {
+  id         int          [pk, increment]
+  usuario_id int          [not null, ref: > usuarios.id]
+  titulo     varchar(150) [not null]
+  mensaje    text
+  tipo       enum('logro','recordatorio','sistema','meta') [not null, default: 'sistema']
+  leida      boolean      [not null, default: false]
+  creado_en  timestamp    [default: `CURRENT_TIMESTAMP`]
+}
+
+// ============================================================
+//  RESUMEN DE RELACIONES
+// ============================================================
+//
+//  usuarios  1──1  perfil_fisico
+//  usuarios  1──*  registros_comida
+//  usuarios  1──*  historial_peso
+//  usuarios  1──*  registro_agua
+//  usuarios  1──*  recetas
+//  usuarios  1──*  alimentos          (solo los personalizados)
+//  usuarios  *──*  logros             (via usuario_logros)
+//  usuarios  1──*  notificaciones
+//  alimentos 1──*  registros_comida
+//  alimentos 1──*  receta_ingredientes
+//  recetas   1──*  receta_ingredientes
+//  logros    1──*  usuario_logros
+//
+// ============================================================
