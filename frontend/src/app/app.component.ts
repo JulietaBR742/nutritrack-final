@@ -11,58 +11,50 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div *ngIf="page !== 'login'" class="navbar">
+    <nav *ngIf="page !== 'login'" class="navbar">
       <div class="brand">NutriTrack</div>
 
-      <div class="nav-center">
-        <button
-          type="button"
-          *ngFor="let item of navItems"
-          (click)="navigate(item.key)"
-          [class.active]="page === item.key"
-          class="nav-btn"
-        >
+      <div class="nav-links">
+        <button type="button" *ngFor="let item of navItems" class="nav-btn" [class.active]="page === item.key" (click)="navigate(item.key)">
           {{ item.label }}
         </button>
       </div>
 
-      <div class="nav-right">
+      <div class="nav-tools">
         <div class="notif-wrap">
           <button type="button" class="icon-btn" (click)="toggleNotifications()">
-            Notificaciones
+            🔔
             <span *ngIf="unreadNotifications > 0" class="notif-badge">{{ unreadNotifications }}</span>
           </button>
           <div *ngIf="showNotifications" class="notif-panel">
-            <div class="notif-head">
-              <strong>Notificaciones</strong>
-              <button type="button" class="text-btn" (click)="markNotificationsRead()">Marcar todas leidas</button>
+            <div class="notif-header">
+              <span>Notificaciones</span>
+              <button type="button" class="link-btn" (click)="markNotificationsRead()">Marcar todas</button>
             </div>
             <div *ngIf="notifications.length === 0" class="notif-empty">Sin notificaciones</div>
             <div *ngFor="let notification of notifications.slice(0, 5)" class="notif-item" [class.unread]="!notification.leida">
               <p>{{ notification.titulo }}</p>
-              <span>{{ notification.mensaje }}</span>
+              <small>{{ notification.mensaje }}</small>
             </div>
           </div>
         </div>
 
-        <button type="button" class="profile-chip" (click)="navigate('perfil')">
+        <button type="button" class="profile-btn" (click)="navigate('perfil')">
           <span class="avatar">{{ initials }}</span>
           <span>{{ firstName }}</span>
         </button>
 
         <button type="button" class="logout-btn" (click)="logout()">Salir</button>
       </div>
-    </div>
+    </nav>
 
     <section *ngIf="page === 'login'" class="login-page">
-      <div class="login-glow login-glow-right"></div>
-      <div class="login-glow login-glow-left"></div>
+      <div class="login-orb orb-right"></div>
+      <div class="login-orb orb-left"></div>
       <div class="login-card">
-        <div class="login-header">
-          <div class="logo-badge">NT</div>
-          <h1>NutriTrack</h1>
-          <p>Tu companero de alimentacion saludable</p>
-        </div>
+        <div class="login-icon">🌿</div>
+        <h1>NutriTrack</h1>
+        <p>Tu companero de alimentacion saludable</p>
 
         <div *ngIf="errorMessage" class="alert danger">{{ errorMessage }}</div>
 
@@ -72,12 +64,10 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
         <label>Contrasena</label>
         <input [(ngModel)]="loginForm.password" type="password" placeholder="********" />
 
-        <button type="button" class="primary-btn" (click)="login()" [disabled]="loading">
+        <button type="button" class="primary-btn wide" (click)="login()" [disabled]="loading">
           {{ loading ? 'Entrando...' : 'Iniciar sesion' }}
         </button>
-        <button type="button" class="secondary-btn wide-btn" (click)="register()" [disabled]="loading">
-          Registrarme
-        </button>
+        <button type="button" class="ghost-btn wide" (click)="register()" [disabled]="loading">Registrarme</button>
       </div>
     </section>
 
@@ -85,23 +75,22 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
       <div *ngIf="globalMessage" class="alert success">{{ globalMessage }}</div>
       <div *ngIf="errorMessage && page !== 'login'" class="alert danger">{{ errorMessage }}</div>
 
-      <section *ngIf="page === 'dashboard'" class="dashboard-page">
+      <section *ngIf="page === 'dashboard'" class="dashboard">
         <div class="hero-card">
-          <div>
-            <p class="hero-eyebrow">Buenos dias</p>
+          <div class="hero-copy">
+            <p class="hero-label">Buenos dias</p>
             <h2>{{ user?.nombre || 'Usuario' }}</h2>
             <div class="macro-row">
-              <span>Prot: <b>{{ dashboard?.consumido?.proteina || 0 | number:'1.0-0' }}g</b></span>
-              <span>Carb: <b>{{ dashboard?.consumido?.carbs || 0 | number:'1.0-0' }}g</b></span>
-              <span>Gras: <b>{{ dashboard?.consumido?.grasas || 0 | number:'1.0-0' }}g</b></span>
+              <span>🥩 Prot: <b>{{ dashboard?.consumido?.proteina || 0 | number:'1.0-0' }}g</b></span>
+              <span>🌾 Carb: <b>{{ dashboard?.consumido?.carbs || 0 | number:'1.0-0' }}g</b></span>
+              <span>🥑 Gras: <b>{{ dashboard?.consumido?.grasas || 0 | number:'1.0-0' }}g</b></span>
             </div>
-            <p class="hero-sub">
-              {{ caloriesRemaining | number:'1.0-0' }} kcal restantes para tu meta
-            </p>
+            <p class="hero-text">{{ caloriesRemaining | number:'1.0-0' }} kcal restantes para tu meta</p>
           </div>
-          <div class="goal-pill">
+
+          <div class="goal-ring">
             <strong>{{ dashboard?.consumido?.calorias || 0 | number:'1.0-0' }}</strong>
-            <span>/ {{ dashboard?.metas?.meta_calorias || 2000 | number:'1.0-0' }}</span>
+            <small>/ {{ dashboard?.metas?.meta_calorias || 2000 | number:'1.0-0' }}</small>
           </div>
         </div>
 
@@ -130,9 +119,7 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
 
         <div class="two-col">
           <div class="panel-card">
-            <div class="panel-head">
-              <h3>Calorias - ultimos 7 dias</h3>
-            </div>
+            <h3>Calorias - ultimos 7 dias</h3>
             <div *ngIf="(dashboard?.semana?.length || 0) === 0" class="empty-text">Sin datos esta semana</div>
             <div *ngIf="(dashboard?.semana?.length || 0) > 0" class="bars">
               <div *ngFor="let day of dashboard?.semana" class="bar-col">
@@ -143,12 +130,10 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
           </div>
 
           <div class="panel-card">
-            <div class="panel-head">
-              <h3>Accesos rapidos</h3>
-            </div>
-            <button type="button" class="quick-link" (click)="navigate('registro')">Registrar comida</button>
-            <button type="button" class="quick-link" (click)="navigate('catalogo')">Ver catalogo</button>
-            <button type="button" class="quick-link" (click)="navigate('perfil')">Mi perfil y metas</button>
+            <h3>Accesos rapidos</h3>
+            <button type="button" class="quick-link" (click)="navigate('registro')">📝 Registrar comida</button>
+            <button type="button" class="quick-link" (click)="navigate('catalogo')">📚 Ver catalogo</button>
+            <button type="button" class="quick-link" (click)="navigate('perfil')">👤 Mi perfil y metas</button>
           </div>
         </div>
       </section>
@@ -156,7 +141,7 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
       <section *ngIf="page === 'catalogo'" class="section-page">
         <div class="section-header">
           <div>
-            <h2>Catalogo Nutricional</h2>
+            <h2>📚 Catalogo Nutricional</h2>
             <p>Consulta alimentos y sus valores por cada 100 gramos.</p>
           </div>
           <div class="filters-row">
@@ -168,7 +153,7 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
         </div>
 
         <div class="food-grid">
-          <div *ngFor="let alimento of alimentos" class="food-card">
+          <article *ngFor="let alimento of alimentos" class="food-card">
             <div class="food-emoji">{{ emojiForCategory(alimento.categoria) }}</div>
             <div class="food-body">
               <h4>{{ alimento.nombre }}</h4>
@@ -178,14 +163,14 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
                 <small>/ 100g</small>
               </div>
             </div>
-          </div>
+          </article>
         </div>
       </section>
 
       <section *ngIf="page === 'registro'" class="section-page">
         <div class="section-header">
           <div>
-            <h2>Nuevo Registro</h2>
+            <h2>📝 Nuevo Registro</h2>
             <p>Agrega lo que consumiste hoy.</p>
           </div>
         </div>
@@ -194,23 +179,20 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
           <div class="panel-card form-card">
             <h3>Registrar comida</h3>
             <div class="chip-row">
-              <button
-                type="button"
-                *ngFor="let meal of mealOptions"
-                class="chip-btn"
-                [class.active]="registroForm.tiempo_comida === meal.key"
-                (click)="registroForm.tiempo_comida = meal.key"
-              >
+              <button type="button" *ngFor="let meal of mealOptions" class="chip-btn" [class.active]="registroForm.tiempo_comida === meal.key" (click)="registroForm.tiempo_comida = meal.key">
                 {{ meal.label }}
               </button>
             </div>
+
             <input [(ngModel)]="registroSearch" (ngModelChange)="searchFoods()" placeholder="Buscar alimento..." />
+
             <select [(ngModel)]="registroForm.alimento_id">
               <option [ngValue]="0">Selecciona un alimento</option>
               <option *ngFor="let alimento of registroAlimentos" [ngValue]="alimento.id">
                 {{ alimento.nombre }} - {{ alimento.calorias_por_100g }} kcal
               </option>
             </select>
+
             <input [(ngModel)]="registroForm.cantidad_g" type="number" placeholder="Cantidad en gramos" />
 
             <div *ngIf="selectedFood && registroForm.cantidad_g" class="estimate-box">
@@ -222,7 +204,7 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
             </div>
 
             <div class="actions-row">
-              <button type="button" class="secondary-btn" (click)="clearRegistro()">Limpiar</button>
+              <button type="button" class="ghost-btn" (click)="clearRegistro()">Limpiar</button>
               <button type="button" class="primary-btn" (click)="saveRegistro()">Guardar</button>
             </div>
           </div>
@@ -254,15 +236,15 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
         </div>
 
         <div class="profile-stats">
-          <div class="mini-stat">
+          <div class="stat-card center">
             <strong>{{ perfil?.peso_kg || '—' }}</strong>
             <span>Peso actual</span>
           </div>
-          <div class="mini-stat">
+          <div class="stat-card center">
             <strong>{{ perfil?.altura_cm || '—' }}</strong>
             <span>Altura</span>
           </div>
-          <div class="mini-stat">
+          <div class="stat-card center">
             <strong>{{ bmi }}</strong>
             <span>IMC</span>
           </div>
@@ -296,7 +278,7 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
       </section>
 
       <section *ngIf="page === 'historial'" class="section-page">
-        <div class="section-header inline-tabs">
+        <div class="section-header">
           <div>
             <h2>Historial</h2>
           </div>
@@ -350,9 +332,9 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
       </section>
 
       <section *ngIf="page === 'recetas'" class="section-page">
-        <div class="section-header inline-tabs">
+        <div class="section-header">
           <div>
-            <h2>Recetas</h2>
+            <h2>🍽️ Recetas</h2>
             <p>Recetas guardadas y personalizadas.</p>
           </div>
           <div class="chip-row">
@@ -362,27 +344,35 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
         </div>
 
         <div *ngIf="recetasView === 'lista'" class="recipe-grid">
-          <button type="button" *ngFor="let receta of recetas" class="recipe-card" (click)="viewReceta(receta.id)">
-            <div class="recipe-icon">Receta</div>
+          <article *ngFor="let receta of recetas; let i = index" class="recipe-card" [style.background]="recipeGradient(i)" (click)="viewReceta(receta.id)">
+            <div class="recipe-icon">🍽️</div>
             <h4>{{ receta.nombre }}</h4>
             <p>{{ receta.descripcion || 'Sin descripcion' }}</p>
             <div class="recipe-meta">
-              <span *ngIf="receta.tiempo_min">{{ receta.tiempo_min }} min</span>
+              <span *ngIf="receta.tiempo_min">⏱️ {{ receta.tiempo_min }} min</span>
               <span>{{ receta.calorias_total | number:'1.0-0' }} kcal</span>
             </div>
-          </button>
+          </article>
+
           <div *ngIf="recetas.length === 0" class="panel-card empty-card">
             <p>No hay recetas aun.</p>
           </div>
         </div>
 
         <div *ngIf="recetasView === 'detalle' && recetaDetalle" class="panel-card">
-          <button type="button" class="text-btn left-text" (click)="recetasView = 'lista'">Volver</button>
+          <button type="button" class="link-btn back-link" (click)="recetasView = 'lista'">← Volver</button>
           <h3>{{ recetaDetalle.nombre }}</h3>
           <p>{{ recetaDetalle.descripcion }}</p>
+          <div class="recipe-meta detail-meta">
+            <span *ngIf="recetaDetalle.tiempo_min">⏱️ {{ recetaDetalle.tiempo_min }} min</span>
+            <span>{{ recetaDetalle.calorias_total | number:'1.0-0' }} kcal totales</span>
+          </div>
           <div *ngFor="let ingrediente of recetaDetalle.ingredientes" class="list-row">
             <span>{{ ingrediente.nombre }}</span>
-            <strong>{{ ingrediente.cantidad_g }} g</strong>
+            <div class="row-actions">
+              <small>{{ ingrediente.cantidad_g }} g</small>
+              <strong>{{ recipeIngredientCalories(ingrediente) | number:'1.0-0' }} kcal</strong>
+            </div>
           </div>
         </div>
 
@@ -392,25 +382,34 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
           <textarea [(ngModel)]="recetaForm.descripcion" placeholder="Descripcion"></textarea>
           <input [(ngModel)]="recetaForm.tiempo_min" type="number" placeholder="Tiempo en minutos" />
 
-          <div class="ingredient-builder">
-            <select [(ngModel)]="ingredienteForm.alimento_id">
-              <option [ngValue]="0">Ingrediente</option>
-              <option *ngFor="let alimento of alimentos" [ngValue]="alimento.id">{{ alimento.nombre }}</option>
-            </select>
-            <input [(ngModel)]="ingredienteForm.cantidad_g" type="number" placeholder="Gramos" />
-            <button type="button" class="secondary-btn" (click)="addIngrediente()">Agregar</button>
-          </div>
-
-          <div *ngFor="let ingrediente of recetaForm.ingredientes" class="list-row">
-            <span>{{ ingrediente.nombre }}</span>
-            <div class="row-actions">
-              <strong>{{ ingrediente.cantidad_g }} g</strong>
-              <button type="button" class="danger-btn" (click)="removeIngrediente(ingrediente.alimento_id)">Quitar</button>
+          <h4 class="subheading">Ingredientes</h4>
+          <div class="recipe-search">
+            <input [(ngModel)]="recetaSearch" (ngModelChange)="searchRecipeIngredients()" placeholder="Buscar ingrediente..." />
+            <div *ngIf="recetaSuggestions.length > 0" class="suggestions-panel">
+              <button type="button" *ngFor="let suggestion of recetaSuggestions" class="suggestion-row" (click)="addSuggestedIngrediente(suggestion)">
+                <span>{{ emojiForCategory(suggestion.categoria) }} {{ suggestion.nombre }}</span>
+                <strong>{{ suggestion.calorias_por_100g }} kcal/100g</strong>
+              </button>
             </div>
           </div>
 
+          <div *ngFor="let ingrediente of recetaForm.ingredientes" class="ingredient-row">
+            <span>{{ ingrediente.nombre }}</span>
+            <div class="row-actions">
+              <input class="ingredient-input" type="number" [ngModel]="ingrediente.cantidad_g" (ngModelChange)="updateIngredienteCantidad(ingrediente.alimento_id, $event)" />
+              <small>g</small>
+              <strong>{{ recipeIngredientCalories(ingrediente) | number:'1.0-0' }} kcal</strong>
+              <button type="button" class="danger-btn" (click)="removeIngrediente(ingrediente.alimento_id)">✕</button>
+            </div>
+          </div>
+
+          <div *ngIf="recetaForm.ingredientes.length > 0" class="estimate-box total-box">
+            <span>Total estimado</span>
+            <strong>{{ totalRecetaCalorias | number:'1.0-0' }} kcal</strong>
+          </div>
+
           <div class="actions-row">
-            <button type="button" class="secondary-btn" (click)="resetReceta()">Cancelar</button>
+            <button type="button" class="ghost-btn" (click)="resetReceta()">Cancelar</button>
             <button type="button" class="primary-btn" (click)="saveReceta()">Guardar receta</button>
           </div>
         </div>
@@ -418,39 +417,46 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
     </main>
   `,
   styles: [`
+    :host { display: block; }
     .navbar {
       position: sticky;
       top: 0;
-      z-index: 20;
-      height: 64px;
+      z-index: 30;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 1rem;
+      gap: 24px;
+      min-height: 64px;
       padding: 0 36px;
       background: var(--green-dark);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+      box-shadow: 0 4px 20px rgba(0,0,0,.25);
       color: white;
     }
     .brand {
-      font-family: 'Georgia', serif;
+      font-family: Georgia, serif;
       font-size: 20px;
       font-weight: 700;
       color: var(--green-soft);
+      white-space: nowrap;
     }
-    .nav-center, .nav-right, .chip-row, .row-actions, .filters-row, .actions-row {
+    .nav-links, .nav-tools, .chip-row, .filters-row, .actions-row, .row-actions {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       flex-wrap: wrap;
+    }
+    .nav-links {
+      flex: 1;
+      justify-content: center;
+      min-width: 0;
     }
     .nav-btn {
       background: none;
       border: none;
-      padding: 6px 2px;
-      color: rgba(255,255,255,0.55);
+      color: rgba(255,255,255,.58);
       font-size: 14px;
       font-weight: 600;
+      padding: 6px 2px;
       border-bottom: 2px solid transparent;
       cursor: pointer;
     }
@@ -458,38 +464,39 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
       color: white;
       border-bottom-color: var(--green-light);
     }
-    .icon-btn, .logout-btn, .profile-chip, .text-btn {
+    .icon-btn, .profile-btn, .logout-btn, .link-btn {
       border: none;
       cursor: pointer;
     }
+    .notif-wrap { position: relative; }
     .icon-btn {
       position: relative;
-      background: rgba(255,255,255,0.08);
+      background: rgba(255,255,255,.08);
+      border-radius: 10px;
       color: white;
       padding: 8px 12px;
-      border-radius: 10px;
+      font-size: 18px;
     }
-    .notif-wrap { position: relative; }
     .notif-badge {
       position: absolute;
       top: -6px;
       right: -6px;
       min-width: 18px;
       height: 18px;
-      padding: 0 5px;
       border-radius: 999px;
       background: var(--orange);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 10px;
-      font-weight: 700;
-      color: white;
+      padding: 0 4px;
     }
     .notif-panel {
       position: absolute;
-      right: 0;
       top: 44px;
+      right: 0;
       width: 320px;
       background: white;
       border-radius: 14px;
@@ -497,10 +504,10 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
       overflow: hidden;
       color: var(--text-dark);
     }
-    .notif-head, .notif-item {
+    .notif-header, .notif-item {
       padding: 12px 16px;
     }
-    .notif-head {
+    .notif-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -508,7 +515,6 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
     }
     .notif-item {
       border-bottom: 1px solid var(--cream-dark);
-      background: white;
     }
     .notif-item.unread {
       background: #f0faf5;
@@ -518,66 +524,74 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
       font-size: 13px;
       font-weight: 700;
     }
-    .notif-item span, .notif-empty {
+    .notif-item small, .notif-empty {
       color: var(--text-light);
       font-size: 12px;
     }
-    .notif-empty { padding: 16px; text-align: center; }
-    .text-btn {
+    .notif-empty {
+      padding: 16px;
+      text-align: center;
+    }
+    .link-btn {
       background: none;
       color: var(--green-mid);
       font-size: 12px;
       font-weight: 700;
+      padding: 0;
     }
-    .left-text { padding: 0; margin-bottom: 12px; }
-    .profile-chip {
+    .back-link {
+      margin-bottom: 12px;
+    }
+    .profile-btn {
+      background: none;
+      color: white;
       display: flex;
       align-items: center;
       gap: 10px;
-      background: none;
-      color: white;
     }
-    .avatar {
-      width: 36px;
-      height: 36px;
+    .avatar, .profile-avatar {
       border-radius: 50%;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       background: linear-gradient(135deg, var(--green-light), var(--orange));
-      font-size: 13px;
+      color: white;
       font-weight: 700;
+    }
+    .avatar {
+      width: 36px;
+      height: 36px;
+      font-size: 13px;
     }
     .logout-btn {
       background: none;
-      border: 1px solid rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,.2);
+      color: rgba(255,255,255,.72);
       border-radius: 8px;
       padding: 6px 10px;
-      color: rgba(255,255,255,0.7);
     }
     .login-page {
       position: relative;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: grid;
+      place-items: center;
+      padding: 24px;
       background: linear-gradient(135deg, #1a3a2a 0%, #0f2d1f 60%, #1a3a2a 100%);
       overflow: hidden;
-      padding: 24px;
     }
-    .login-glow {
+    .login-orb {
       position: absolute;
       border-radius: 50%;
       pointer-events: none;
     }
-    .login-glow-right {
+    .orb-right {
       top: -120px;
       right: -120px;
       width: 500px;
       height: 500px;
       background: radial-gradient(circle, rgba(82,183,136,.12) 0%, transparent 70%);
     }
-    .login-glow-left {
+    .orb-left {
       bottom: -100px;
       left: -100px;
       width: 400px;
@@ -587,50 +601,50 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
     .login-card {
       width: min(460px, 100%);
       padding: 52px;
-      border-radius: 24px;
-      background: rgba(255,255,255,0.05);
+      background: rgba(255,255,255,.05);
       backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,0.1);
-      box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 24px;
+      box-shadow: 0 24px 64px rgba(0,0,0,.4);
       color: white;
       position: relative;
       z-index: 1;
     }
-    .login-header {
-      text-align: center;
-      margin-bottom: 28px;
-    }
-    .logo-badge {
+    .login-icon {
       width: 64px;
       height: 64px;
       margin: 0 auto 12px;
       border-radius: 18px;
+      background: linear-gradient(135deg,#52b788,#95d5b2);
       display: grid;
       place-items: center;
-      background: linear-gradient(135deg,#52b788,#95d5b2);
-      color: white;
-      font-weight: 700;
-      font-size: 22px;
+      font-size: 30px;
     }
-    .login-card h1, .section-header h2, .panel-head h3, .panel-card h3, .hero-card h2, .profile-hero h2 {
-      font-family: 'Georgia', serif;
+    .login-card h1 {
       margin: 0;
+      text-align: center;
+      font-family: Georgia, serif;
+      font-size: 28px;
     }
     .login-card p {
-      margin-top: 8px;
-      color: rgba(255,255,255,0.58);
+      margin: 6px 0 22px;
+      text-align: center;
+      color: rgba(255,255,255,.55);
+      font-size: 14px;
     }
     .login-card label {
       display: block;
-      margin: 14px 0 6px;
+      margin-bottom: 6px;
+      color: rgba(255,255,255,.62);
       font-size: 11px;
       font-weight: 700;
-      color: rgba(255,255,255,0.64);
       text-transform: uppercase;
       letter-spacing: .5px;
     }
     .page-shell {
-      padding: 28px 36px;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 28px 36px 40px;
       background: var(--cream);
       min-height: calc(100vh - 64px);
     }
@@ -655,115 +669,103 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
       background: var(--green-dark);
       color: white;
       border-radius: var(--radius);
-      padding: 28px 32px 38px;
+      padding: 28px 36px 44px;
       display: flex;
+      align-items: center;
       justify-content: space-between;
       gap: 24px;
-      align-items: center;
-      position: relative;
       overflow: hidden;
     }
-    .hero-eyebrow {
-      color: rgba(255,255,255,0.5);
-      font-size: 13px;
+    .hero-label {
       margin: 0 0 4px;
+      color: rgba(255,255,255,.5);
+      font-size: 13px;
+    }
+    .hero-card h2, .section-header h2, .panel-card h3, .profile-hero h2 {
+      margin: 0;
+      font-family: Georgia, serif;
     }
     .macro-row {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
-      margin: 14px 0 10px;
+      margin: 16px 0 10px;
     }
     .macro-row span {
-      padding: 6px 14px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
       border-radius: 20px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.12);
+      padding: 6px 14px;
       font-size: 12px;
     }
-    .hero-sub {
-      font-size: 12px;
-      color: rgba(255,255,255,0.5);
+    .hero-text {
       margin: 0;
+      color: rgba(255,255,255,.5);
+      font-size: 12px;
     }
-    .goal-pill {
+    .goal-ring {
       width: 110px;
       height: 110px;
       border-radius: 50%;
+      border: 10px solid var(--green-light);
+      background: rgba(255,255,255,.08);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: rgba(255,255,255,0.08);
-      border: 10px solid var(--green-light);
       text-align: center;
+      flex-shrink: 0;
     }
-    .goal-pill strong {
+    .goal-ring strong {
       font-size: 20px;
     }
-    .goal-pill span {
+    .goal-ring small {
+      color: rgba(255,255,255,.6);
       font-size: 10px;
-      color: rgba(255,255,255,0.6);
     }
-    .stats-grid, .food-grid, .recipe-grid, .profile-stats {
+    .stats-grid, .food-grid, .profile-stats, .recipe-grid {
       display: grid;
       gap: 16px;
     }
     .stats-grid {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
       margin: 28px 0;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     }
-    .stat-card, .mini-stat {
+    .stat-card, .panel-card, .food-card {
       background: white;
       border-radius: var(--radius);
-      padding: 20px;
       box-shadow: var(--shadow-sm);
     }
-    .stat-card p, .mini-stat span {
-      margin: 0 0 6px;
+    .stat-card, .panel-card {
+      padding: 20px 22px;
+    }
+    .stat-card p, .stat-card span {
+      margin: 0;
+    }
+    .stat-card p {
       font-size: 11px;
+      font-weight: 700;
       color: var(--text-light);
       text-transform: uppercase;
       letter-spacing: .5px;
-      font-weight: 700;
     }
-    .stat-card strong, .mini-stat strong, .water-total {
+    .stat-card strong {
+      display: block;
       font-size: 22px;
-      color: var(--green-mid);
+      margin: 6px 0 4px;
     }
     .stat-card span {
       font-size: 12px;
       color: var(--text-light);
     }
+    .center {
+      text-align: center;
+    }
     .two-col {
       display: grid;
-      grid-template-columns: 1.2fr 1fr;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
       gap: 20px;
       align-items: start;
-    }
-    .panel-card {
-      background: white;
-      border-radius: var(--radius);
-      padding: 22px;
-      box-shadow: var(--shadow-sm);
-    }
-    .panel-card h3 {
-      font-size: 17px;
-      color: var(--green-dark);
-      margin-bottom: 16px;
-    }
-    .panel-head {
-      margin-bottom: 16px;
-    }
-    .quick-link {
-      width: 100%;
-      text-align: left;
-      padding: 12px;
-      background: var(--cream);
-      border: none;
-      border-radius: 12px;
-      margin-bottom: 10px;
-      font-weight: 600;
     }
     .bars {
       display: flex;
@@ -789,19 +791,30 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
       color: var(--text-light);
       font-weight: 600;
     }
+    .quick-link {
+      width: 100%;
+      text-align: left;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: var(--cream);
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      font-weight: 600;
+      cursor: pointer;
+    }
     .section-page {
       display: grid;
       gap: 20px;
     }
     .section-header {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      align-items: center;
       background: white;
-      padding: 16px 22px;
       border-radius: var(--radius);
       box-shadow: 0 2px 10px rgba(0,0,0,.05);
+      padding: 16px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
     }
     .section-header p {
       margin: 4px 0 0;
@@ -809,13 +822,10 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
       font-size: 13px;
     }
     .food-grid {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
     }
     .food-card {
-      background: white;
-      border-radius: var(--radius);
       overflow: hidden;
-      box-shadow: var(--shadow-sm);
     }
     .food-emoji {
       height: 90px;
@@ -860,14 +870,16 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
       border-radius: 10px;
       background: var(--cream);
       outline: none;
+      margin-bottom: 12px;
     }
     .estimate-box {
       background: #e8f5ee;
       border-radius: 10px;
       padding: 12px 16px;
       font-size: 13px;
+      margin-bottom: 12px;
     }
-    .list-row {
+    .list-row, .ingredient-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -882,34 +894,26 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
       font-size: 12px;
       color: var(--text-light);
     }
-    .danger-btn {
-      background: #fce4ec;
-      color: #e57373;
+    .list-row small, .ingredient-row small {
+      color: var(--text-light);
+      font-size: 12px;
+    }
+    .primary-btn, .ghost-btn, .chip-btn, .danger-btn {
       border: none;
-      border-radius: 8px;
-      padding: 6px 10px;
-      font-weight: 700;
+      border-radius: 10px;
       cursor: pointer;
+      font-weight: 700;
+      padding: 11px 18px;
     }
     .primary-btn {
       background: linear-gradient(135deg,#52b788,#40916c);
       color: white;
-      border: none;
-      border-radius: 10px;
-      padding: 12px 18px;
-      font-weight: 700;
-      cursor: pointer;
     }
-    .secondary-btn, .chip-btn {
+    .ghost-btn, .chip-btn {
       background: var(--cream-dark);
       color: var(--text-mid);
-      border: none;
-      border-radius: 10px;
-      padding: 11px 16px;
-      cursor: pointer;
-      font-weight: 600;
     }
-    .wide-btn { width: 100%; margin-top: 10px; }
+    .wide { width: 100%; }
     .chip-btn {
       border-radius: 20px;
       padding: 7px 16px;
@@ -919,10 +923,15 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
       background: var(--green-light);
       color: white;
     }
+    .danger-btn {
+      background: #fce4ec;
+      color: #e57373;
+      padding: 6px 10px;
+    }
     .profile-hero {
       background: linear-gradient(160deg,var(--green-dark) 0%,#2d6a4f 100%);
-      padding: 40px 36px 60px;
       border-radius: var(--radius);
+      padding: 40px 36px 60px;
       color: white;
       display: flex;
       align-items: center;
@@ -931,23 +940,26 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
     .profile-avatar {
       width: 80px;
       height: 80px;
-      border-radius: 50%;
-      background: linear-gradient(135deg,#52b788,#e07a3a);
-      display: grid;
-      place-items: center;
       font-size: 26px;
-      font-weight: 700;
-      border: 3px solid rgba(255,255,255,0.3);
+      border: 3px solid rgba(255,255,255,.3);
     }
     .profile-hero p {
-      margin-top: 4px;
-      color: rgba(255,255,255,0.65);
+      margin: 4px 0 0;
+      color: rgba(255,255,255,.65);
     }
     .profile-stats {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
       margin-top: -28px;
+      position: relative;
+      z-index: 2;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     }
-    .mini-stat { text-align: center; }
+    .water-total {
+      font-size: 40px;
+      font-weight: 700;
+      color: var(--green-mid);
+      text-align: center;
+      margin: 0 0 6px;
+    }
     .progress-track {
       height: 10px;
       border-radius: 20px;
@@ -961,26 +973,39 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
       background: linear-gradient(90deg,#52b788,#95d5b2);
     }
     .recipe-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     }
     .recipe-card {
-      text-align: left;
-      background: linear-gradient(135deg,#1a3a2a,#0f2d1f);
-      color: white;
-      border: none;
       border-radius: var(--radius);
+      color: white;
       padding: 24px;
       cursor: pointer;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
     }
     .recipe-card h4 {
-      font-family: 'Georgia', serif;
       margin: 0 0 6px;
+      font-family: Georgia, serif;
       font-size: 17px;
     }
     .recipe-card p {
-      color: rgba(255,255,255,0.68);
+      margin: 0;
       font-size: 12px;
+      color: rgba(255,255,255,.68);
       min-height: 32px;
+    }
+    .recipe-icon, .recipe-meta span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 20px;
+      background: rgba(255,255,255,.1);
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .recipe-icon {
+      margin-bottom: 10px;
     }
     .recipe-meta {
       display: flex;
@@ -988,66 +1013,104 @@ type Page = 'login' | 'dashboard' | 'catalogo' | 'registro' | 'perfil' | 'histor
       flex-wrap: wrap;
       margin-top: 12px;
     }
-    .recipe-meta span, .recipe-icon {
-      background: rgba(255,255,255,0.1);
-      border-radius: 20px;
-      padding: 4px 10px;
-      font-size: 11px;
-      font-weight: 600;
-    }
-    .recipe-icon {
-      display: inline-block;
-      margin-bottom: 8px;
+    .detail-meta {
+      margin-bottom: 18px;
     }
     .recipe-form textarea {
       min-height: 90px;
       resize: vertical;
     }
-    .ingredient-builder {
-      display: grid;
-      grid-template-columns: 1.2fr .8fr auto;
-      gap: 10px;
+    .subheading {
+      margin: 4px 0 10px;
+      color: var(--green-dark);
+      font-size: 15px;
+      font-weight: 700;
     }
-    .empty-text, .empty-card {
+    .recipe-search {
+      position: relative;
+      margin-bottom: 8px;
+    }
+    .suggestions-panel {
+      border: 2px solid var(--cream-dark);
+      border-radius: 10px;
+      overflow: hidden;
+      background: white;
+    }
+    .suggestion-row {
+      width: 100%;
+      border: none;
+      border-bottom: 1px solid var(--cream-dark);
+      background: white;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      text-align: left;
+      cursor: pointer;
+      color: var(--text-dark);
+    }
+    .suggestion-row:last-child {
+      border-bottom: none;
+    }
+    .ingredient-input {
+      width: 74px;
+      padding: 7px 10px;
+      border: 2px solid var(--cream-dark);
+      border-radius: 8px;
+      background: white;
+    }
+    .total-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .empty-text, .empty-card p {
       color: var(--text-light);
       font-size: 13px;
     }
     @media (max-width: 1100px) {
-      .stats-grid, .food-grid, .recipe-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
       .two-col {
         grid-template-columns: 1fr;
       }
       .section-header {
         flex-direction: column;
-        align-items: stretch;
       }
     }
     @media (max-width: 760px) {
       .navbar {
-        height: auto;
         padding: 14px 16px;
         flex-direction: column;
         align-items: stretch;
       }
-      .nav-center, .nav-right {
+      .nav-links, .nav-tools {
         justify-content: center;
       }
       .page-shell {
-        padding: 18px 16px;
+        padding: 18px 16px 32px;
       }
       .login-card {
         padding: 32px 22px;
       }
-      .stats-grid, .food-grid, .recipe-grid, .profile-stats {
+      .hero-card {
+        padding: 24px 22px 30px;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .stats-grid, .food-grid, .profile-stats, .recipe-grid {
         grid-template-columns: 1fr;
       }
       .profile-hero {
         padding: 28px 22px 44px;
       }
-      .ingredient-builder {
-        grid-template-columns: 1fr;
+      .list-row, .ingredient-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .row-actions, .filters-row, .actions-row {
+        width: 100%;
+      }
+      .row-actions > * {
+        flex: 1;
       }
     }
   `],
@@ -1099,7 +1162,8 @@ export class AppComponent implements OnInit {
   recetas: any[] = [];
   recetaDetalle: any = null;
   recetaForm = { nombre: '', descripcion: '', tiempo_min: null as number | null, ingredientes: [] as any[] };
-  ingredienteForm = { alimento_id: 0, cantidad_g: null as number | null };
+  recetaSearch = '';
+  recetaSuggestions: any[] = [];
 
   constructor(private api: ApiService) {}
 
@@ -1168,6 +1232,13 @@ export class AppComponent implements OnInit {
     return Math.min(((this.agua?.total_ml || 0) / 2500) * 100, 100);
   }
 
+  get totalRecetaCalorias(): number {
+    return this.recetaForm.ingredientes.reduce(
+      (total, ingrediente) => total + this.recipeIngredientCalories(ingrediente),
+      0,
+    );
+  }
+
   private today(): string {
     return new Date().toISOString().split('T')[0];
   }
@@ -1225,6 +1296,20 @@ export class AppComponent implements OnInit {
       otro: '🍽️',
     };
     return map[category] || '🍽️';
+  }
+
+  recipeGradient(index: number): string {
+    const gradients = [
+      'linear-gradient(135deg,#1a3a2a,#0f2d1f)',
+      'linear-gradient(135deg,#7b3f00,#4a2000)',
+      'linear-gradient(135deg,#2d6a4f,#1a3a2a)',
+      'linear-gradient(135deg,#1a2a3a,#0f1f2d)',
+    ];
+    return gradients[index % gradients.length];
+  }
+
+  recipeIngredientCalories(ingrediente: any): number {
+    return (Number(ingrediente.calorias_por_100g || 0) * Number(ingrediente.cantidad_g || 0)) / 100;
   }
 
   async login(): Promise<void> {
@@ -1391,24 +1476,43 @@ export class AppComponent implements OnInit {
 
   async loadRecetas(): Promise<void> {
     this.recetas = await this.api.listarRecetas();
+    this.recetaDetalle = null;
     if (this.alimentos.length === 0) {
       this.alimentos = await this.api.listarAlimentos();
     }
   }
 
-  addIngrediente(): void {
-    const selected = this.alimentos.find((item) => item.id === this.ingredienteForm.alimento_id);
-    if (!selected || !this.ingredienteForm.cantidad_g) {
-      this.errorMessage = 'Selecciona un ingrediente y una cantidad';
+  async searchRecipeIngredients(): Promise<void> {
+    if (this.recetaSearch.trim().length < 2) {
+      this.recetaSuggestions = [];
+      return;
+    }
+    this.recetaSuggestions = (await this.api.listarAlimentos('todos', this.recetaSearch)).slice(0, 6);
+  }
+
+  addSuggestedIngrediente(alimento: any): void {
+    const exists = this.recetaForm.ingredientes.some((item) => item.alimento_id === alimento.id);
+    if (exists) {
+      this.errorMessage = 'Ese ingrediente ya esta agregado';
       return;
     }
     this.errorMessage = '';
     this.recetaForm.ingredientes.push({
-      alimento_id: selected.id,
-      cantidad_g: this.ingredienteForm.cantidad_g,
-      nombre: selected.nombre,
+      alimento_id: alimento.id,
+      nombre: alimento.nombre,
+      cantidad_g: 100,
+      calorias_por_100g: alimento.calorias_por_100g,
     });
-    this.ingredienteForm = { alimento_id: 0, cantidad_g: null };
+    this.recetaSearch = '';
+    this.recetaSuggestions = [];
+  }
+
+  updateIngredienteCantidad(alimentoId: number, cantidad: number): void {
+    this.recetaForm.ingredientes = this.recetaForm.ingredientes.map((item) =>
+      item.alimento_id === alimentoId
+        ? { ...item, cantidad_g: Number(cantidad) || 0 }
+        : item,
+    );
   }
 
   removeIngrediente(alimentoId: number): void {
@@ -1417,13 +1521,26 @@ export class AppComponent implements OnInit {
 
   resetReceta(): void {
     this.recetaForm = { nombre: '', descripcion: '', tiempo_min: null, ingredientes: [] };
+    this.recetaSearch = '';
+    this.recetaSuggestions = [];
     this.recetasView = 'lista';
   }
 
   async saveReceta(): Promise<void> {
     await this.safeRun(async () => {
-      await this.api.crearReceta(this.recetaForm);
-      this.recetaForm = { nombre: '', descripcion: '', tiempo_min: null, ingredientes: [] };
+      if (!this.recetaForm.nombre || this.recetaForm.ingredientes.length === 0) {
+        throw new Error('Nombre e ingredientes son requeridos');
+      }
+      await this.api.crearReceta({
+        nombre: this.recetaForm.nombre,
+        descripcion: this.recetaForm.descripcion,
+        tiempo_min: this.recetaForm.tiempo_min ? Number(this.recetaForm.tiempo_min) : null,
+        ingredientes: this.recetaForm.ingredientes.map((item) => ({
+          alimento_id: item.alimento_id,
+          cantidad_g: item.cantidad_g,
+        })),
+      });
+      this.resetReceta();
       await this.loadRecetas();
       this.recetasView = 'lista';
       this.setMessage('Receta guardada');
